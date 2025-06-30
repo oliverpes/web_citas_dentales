@@ -13,11 +13,12 @@ const AdminPanel: React.FC = () => {
   const [nrole, setNrole] = useState<'admin'|'recepcionista'>('recepcionista');
 
   const fetchUsers = async () => {
-    const res = await api.get('/users', {
+    const res = await api.get('/api/users', {
       headers: { Authorization: `Bearer ${token}` }
     });
     setUsers(res.data);
   };
+
 
   const create = async () => {
     await api.post('/auth/register', { username: nuser, password: npass, role: nrole });
