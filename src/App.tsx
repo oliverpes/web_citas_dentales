@@ -2,18 +2,22 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
-import Login from './components/Login';
+import Login from './components/login';
 import Register from './components/register';
 import AdminPanel from './components/AdminPanel';
 import ReceptionPanel from './components/ReceptionPanel';
+import SuperAdminPanel from './components/SuperAdminPanel';
 
 function ProtectedRoutes() {
   const { token, role } = useAuth();
 
   if (!token) return <Navigate to="/login" replace />;
 
+  if (role === 'superadmin') return <SuperAdminPanel />;
   if (role === 'admin') return <AdminPanel />;
-  return <ReceptionPanel />;
+  if (role === 'recepcionista') return <ReceptionPanel />;
+
+  return <div className="text-center p-4">Rol no reconocido</div>;
 }
 
 export default function App() {
