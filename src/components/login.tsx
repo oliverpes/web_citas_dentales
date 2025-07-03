@@ -1,20 +1,27 @@
 // src/components/Login.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
 const Login: React.FC = () => {
-  const { login } = useAuth();
+  const { token, login } = useAuth();
   const navigate = useNavigate();
   const [u, setU] = useState('');
   const [p, setP] = useState('');
   const [error, setError] = useState('');
 
+  // Si ya está logueado, redirigir a /panel automáticamente
+  useEffect(() => {
+    if (token) {
+      navigate('/panel');
+    }
+  }, [token]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     try {
-      await login(u, p);  // tu lógica original
+      await login(u, p);  // realiza login
       navigate('/panel'); // redirige si login OK
     } catch (err) {
       setError('Credenciales inválidas');
