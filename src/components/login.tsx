@@ -2,6 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import {
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Alert,
+} from '@mui/material';
 
 const Login: React.FC = () => {
   const { token, login } = useAuth();
@@ -10,7 +19,6 @@ const Login: React.FC = () => {
   const [p, setP] = useState('');
   const [error, setError] = useState('');
 
-  // Si ya está logueado, redirigir a /panel automáticamente
   useEffect(() => {
     if (token) {
       navigate('/panel');
@@ -21,62 +29,75 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError('');
     try {
-      await login(u, p);  // realiza login
-      navigate('/panel'); // redirige si login OK
+      await login(u, p);
+      navigate('/panel');
     } catch (err) {
       setError('Credenciales inválidas');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-200 via-cyan-200 to-teal-300 flex items-center justify-center">
-      <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">Iniciar Sesión</h1>
-        <form onSubmit={handleLogin} className="space-y-4">
-          {error && <div className="text-red-500 text-sm">{error}</div>}
-          <div>
-            <label className="block text-gray-600">Usuario</label>
-            <input
-              type="text"
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(to bottom right, #b2ebf2, #e1f5fe)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        px: 2,
+      }}
+    >
+      <Container maxWidth="sm">
+        <Paper elevation={6} sx={{ p: 4, borderRadius: 4 }}>
+          <Typography variant="h4" textAlign="center" color="primary" gutterBottom>
+            Iniciar Sesión
+          </Typography>
+
+          <form onSubmit={handleLogin}>
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+            <TextField
+              fullWidth
+              label="Usuario"
               value={u}
               onChange={(e) => setU(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
-              placeholder="Ingresa tu usuario"
+              margin="normal"
               required
             />
-          </div>
-          <div>
-            <label className="block text-gray-600">Contraseña</label>
-            <input
+            <TextField
+              fullWidth
+              label="Contraseña"
               type="password"
               value={p}
               onChange={(e) => setP(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
-              placeholder="Ingresa tu contraseña"
+              margin="normal"
               required
             />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition duration-200"
-          >
-            Ingresar
-          </button>
-        </form>
-
-        <div className="mt-4 text-center">
-          <p className="text-gray-600">
-            ¿No tienes cuenta?{' '}
-            <Link
-              to="/register"
-              className="text-blue-600 hover:underline font-semibold"
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              sx={{ mt: 2 }}
             >
-              Regístrate aquí
-            </Link>
-          </p>
-        </div>
-      </div>
-    </div>
+              Ingresar
+            </Button>
+          </form>
+
+          <Box mt={3} textAlign="center">
+            <Typography variant="body2">
+              ¿No tienes cuenta?{' '}
+              <Link to="/register" style={{ color: '#1976d2', textDecoration: 'none' }}>
+                Regístrate aquí
+              </Link>
+            </Typography>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 

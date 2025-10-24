@@ -1,4 +1,3 @@
-// src/AuthContext.tsx
 import React, {
   createContext,
   useState,
@@ -8,10 +7,10 @@ import React, {
 } from 'react';
 import { api } from './Api';
 
-// Tipado del contexto
+// ✅ Tipado extendido para incluir 'superadmin'
 interface AuthContextType {
   token: string | null;
-  role: 'admin' | 'recepcionista' | null;
+  role: 'superadmin' | 'admin' | 'recepcionista' | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
 }
@@ -22,9 +21,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Componente proveedor del contexto de autenticación
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
-  const [role, setRole] = useState<'admin' | 'recepcionista' | null>(() => {
+
+  const [role, setRole] = useState<AuthContextType['role']>(() => {
     const storedRole = localStorage.getItem('role');
-    return storedRole === 'admin' || storedRole === 'recepcionista' ? storedRole : null;
+    // ✅ Acepta también superadmin desde localStorage
+    return storedRole === 'superadmin' || storedRole === 'admin' || storedRole === 'recepcionista'
+      ? storedRole
+      : null;
   });
 
   // Guardar token en localStorage si cambia
@@ -49,9 +52,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = async (username: string, password: string): Promise<void> => {
     const res = await api.post('/auth/login', { username, password });
 
-    // Guarda token y rol en estado y localStorage
     setToken(res.data.token);
-    setRole(res.data.user.role);
+    setRole(res.data.user.role); // 'superadmin', 'admin', o 'recepcionista'
   };
 
   // Función para cerrar sesión
@@ -62,7 +64,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.removeItem('role');
   };
 
-  // Proveer valores del contexto
   return (
     <AuthContext.Provider value={{ token, role, login, logout }}>
       {children}
